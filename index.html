@@ -3,76 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comprobador de Existencias - Loterías</title>
-  <!-- Tailwind CSS para interfaz -->
+  <title>Comprobador de Lotería - Móvil</title>
+  <!-- Tailwind CSS para diseño móvil -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- PapaParse para procesamiento eficiente de CSV -->
+  <!-- PapaParse para procesamiento de textos/CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 p-6 min-h-screen">
-  <div class="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-md">
-    <h1 class="text-2xl font-bold text-slate-900 mb-2">Comprobador de Existencias (NUMERO / FRACCIONES)</h1>
-    <p class="text-sm text-slate-500 mb-6">Filtra los números de tu listado cuyas fracciones en el listado oficial sean menores al umbral indicado.</p>
+<body class="bg-slate-100 text-slate-800 p-4 min-h-screen">
+  <div class="max-w-lg mx-auto bg-white p-5 rounded-2xl shadow-lg border border-slate-200">
+    
+    <!-- Encabezado Móvil -->
+    <div class="text-center mb-6">
+      <h1 class="text-xl font-bold text-slate-900">Comprobador de Existencias</h1>
+      <p class="text-xs text-slate-500 mt-1">Carga tu listado .txt y detecta números con menos de 400 fracciones.</p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <!-- Configuración Listado Oficial -->
-      <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-        <label class="block font-semibold text-sm mb-2">1. URL del Listado Oficial (CSV)</label>
+    <!-- Selección de Archivo .TXT (Optimizado para móvil) -->
+    <div class="space-y-4 mb-6">
+      
+      <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-xl p-4 text-center">
+        <label for="customFile" class="block font-semibold text-sm text-blue-900 mb-2">
+          📱 Seleccionar listado (.txt) de tu móvil
+        </label>
+        <input type="file" id="customFile" accept=".txt,.csv" 
+               class="block w-full text-xs text-slate-600 
+                      file:mr-3 file:py-3 file:px-4 file:rounded-lg file:border-0 
+                      file:text-xs file:font-semibold file:bg-blue-600 file:text-white 
+                      hover:file:bg-blue-700 active:file:bg-blue-800 cursor-pointer">
+        <p class="text-[11px] text-slate-500 mt-2">Admite archivos .txt con un número por línea o en formato CSV.</p>
+      </div>
+
+      <!-- Ajuste del umbral -->
+      <div class="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
+        <label for="threshold" class="font-medium text-xs text-slate-700">Fracciones menores a:</label>
+        <input type="number" id="threshold" value="400" class="w-20 p-2 border rounded-md text-center font-bold text-slate-800 bg-white">
+      </div>
+
+      <!-- URL Oficial (Plegable / Secundaria) -->
+      <details class="text-xs text-slate-500">
+        <summary class="cursor-pointer font-medium text-slate-600 hover:underline">Ver URL del listado oficial</summary>
         <input type="text" id="officialUrl" 
                value="https://www.loteriasyapuestas.es/new-geo-web/GeoTerminalServlet/Sorteo2026102.csv?drawId=1332409102&locale=es&cdc=13324" 
-               class="w-full text-xs p-2.5 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-        <p class="text-xs text-slate-400 mt-1">Busca las columnas <strong>NUMERO</strong> y <strong>FRACCIONES</strong>.</p>
-      </div>
-
-      <!-- Configuración Listado Propio -->
-      <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-        <label class="block font-semibold text-sm mb-2">2. Listado Propio (GitHub Raw o Subir Archivo)</label>
-        <input type="text" id="customUrl" placeholder="https://raw.githubusercontent.com/usuario/repo/main/mi_listado.csv" 
-               class="w-full text-xs p-2.5 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none mb-2">
-        <div class="text-center text-xs text-slate-400 my-1">— o sube el archivo directamente —</div>
-        <input type="file" id="customFile" accept=".csv, .txt" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700">
-      </div>
+               class="w-full text-[11px] p-2 border rounded bg-slate-50 mt-2 outline-none">
+      </details>
+      
     </div>
 
-    <!-- Ajuste Umbral y Acción -->
-    <div class="flex items-center justify-between border-t border-slate-200 pt-4 mb-6">
-      <div class="flex items-center gap-2">
-        <label class="font-medium text-sm">Fracciones menores a:</label>
-        <input type="number" id="threshold" value="400" class="w-20 p-1.5 border rounded-md text-center font-bold text-slate-800">
-      </div>
-      <button onclick="procesarListados()" id="btnProcess" 
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition shadow">
-        Comprobar Fracciones
-      </button>
-    </div>
+    <!-- Botón Principal -->
+    <button onclick="procesarListados()" id="btnProcess" 
+            class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
+      🔍 Comprobar Mi Listado
+    </button>
 
     <!-- Indicador de Estado -->
-    <div id="status" class="hidden p-3 rounded-lg text-sm font-medium mb-4"></div>
+    <div id="status" class="hidden my-4 p-3 rounded-xl text-xs font-medium text-center"></div>
 
-    <!-- Tabla de Resultados -->
-    <div id="resultsContainer" class="hidden">
+    <!-- Resultados -->
+    <div id="resultsContainer" class="hidden mt-6">
       <div class="flex justify-between items-center mb-3">
-        <h2 class="font-bold text-lg">Resultados (<span id="countResult">0</span> números bajo el umbral)</h2>
-        <button onclick="exportarCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded font-medium">
-          Descargar Resultados (.CSV)
+        <h2 class="font-bold text-sm text-slate-800">Coincidencias (<span id="countResult">0</span>)</h2>
+        <button onclick="exportarCSV()" class="text-xs bg-emerald-600 active:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-medium shadow">
+          Descargar .CSV
         </button>
       </div>
-      <div class="overflow-x-auto border rounded-lg">
-        <table class="w-full text-left text-sm border-collapse">
-          <thead class="bg-slate-100 text-slate-700 border-b">
+
+      <!-- Tabla Adaptada a Móvil -->
+      <div class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-100 text-slate-600 border-b">
             <tr>
-              <th class="p-3">Número</th>
-              <th class="p-3">Fracciones Oficiales</th>
-              <th class="p-3">Estado</th>
-              <th class="p-3">Datos Adicionales</th>
+              <th class="p-2.5">Número</th>
+              <th class="p-2.5">Fracciones</th>
+              <th class="p-2.5">Estado</th>
             </tr>
           </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-200">
+          <tbody id="tableBody" class="divide-y divide-slate-100 bg-white">
             <!-- Filas dinámicas -->
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
 
   <script>
@@ -82,76 +93,89 @@
       const status = document.getElementById('status');
       const resultsContainer = document.getElementById('resultsContainer');
       const officialUrl = document.getElementById('officialUrl').value.trim();
-      const customUrl = document.getElementById('customUrl').value.trim();
       const customFileInput = document.getElementById('customFile').files[0];
       const threshold = parseInt(document.getElementById('threshold').value, 10);
 
-      showStatus('Descargando y procesando listados...', 'bg-blue-100 text-blue-800');
+      if (!customFileInput) {
+        showStatus('⚠️ Selecciona un archivo .txt de tu móvil antes de continuar.', 'bg-amber-100 text-amber-900 border border-amber-200');
+        return;
+      }
+
+      showStatus('⏳ Descargando datos oficial y analizando...', 'bg-blue-100 text-blue-900 border border-blue-200');
       resultsContainer.classList.add('hidden');
 
       try {
-        // 1. Obtener CSV oficial vía proxy CORS
+        // 1. Obtener CSV oficial mediante Proxy CORS
         const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(officialUrl);
         const resOficial = await fetch(proxyUrl);
-        if (!resOficial.ok) throw new Error('No se pudo acceder al archivo oficial de Loterías.');
+        if (!resOficial.ok) throw new Error('No se pudo descargar el listado oficial.');
         const textOficial = await resOficial.text();
         
         const oficialParsed = Papa.parse(textOficial, { header: true, skipEmptyLines: true, dynamicTyping: true });
         
-        // Mapeo directo usando NUMERO y FRACCIONES
+        // Mapear NUMERO -> FRACCIONES
         const mapaOficial = {};
         oficialParsed.data.forEach(row => {
-          // Búsqueda flexible para variaciones de mayúsculas o acentos
           const keyNumero = Object.keys(row).find(k => k && k.trim().toUpperCase().includes('NUMERO')) || 'NUMERO';
           const keyFracciones = Object.keys(row).find(k => k && k.trim().toUpperCase().includes('FRACCION')) || 'FRACCIONES';
 
           if (row[keyNumero] !== undefined && row[keyNumero] !== null) {
-            // Dar formato de 5 dígitos (ej: "01234")
             const numStr = String(row[keyNumero]).trim().padStart(5, '0');
             const fracciones = parseInt(row[keyFracciones] || 0, 10);
             mapaOficial[numStr] = fracciones;
           }
         });
 
-        // 2. Leer listado propio (Archivo subido o URL de GitHub)
-        let textPropio = '';
-        if (customFileInput) {
-          textPropio = await customFileInput.text();
-        } else if (customUrl) {
-          const resPropio = await fetch(customUrl);
-          if (!resPropio.ok) throw new Error('No se pudo descargar el archivo desde GitHub.');
-          textPropio = await resPropio.text();
+        // 2. Leer archivo .txt propio
+        const textPropio = await customFileInput.text();
+        
+        // Extraer números independientemente de si es CSV o líneas simples
+        const lineas = textPropio.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        let numerosPropios = [];
+
+        // Detectar si el .txt tiene cabecera con columna NUMERO o si es una lista simple
+        const primerLinea = lineas[0] || '';
+        if (primerLinea.toUpperCase().includes('NUMERO')) {
+          const propioParsed = Papa.parse(textPropio, { header: true, skipEmptyLines: true });
+          propioParsed.data.forEach(row => {
+            const keyNum = Object.keys(row).find(k => k && k.trim().toUpperCase().includes('NUMERO')) || Object.keys(row)[0];
+            if (row[keyNum]) {
+              const numStr = String(row[keyNum]).replace(/\D/g, '').padStart(5, '0');
+              if (numStr) numerosPropios.push(numStr);
+            }
+          });
         } else {
-          throw new Error('Por favor selecciona un archivo local o introduce una URL válida de GitHub Raw.');
+          // Lectura directa línea a línea (formato simple: un número por línea)
+          lineas.forEach(linea => {
+            const numLimpio = linea.replace(/\D/g, ''); // Deja solo dígitos
+            if (numLimpio.length > 0) {
+              numerosPropios.push(numLimpio.padStart(5, '0'));
+            }
+          });
         }
 
-        const propioParsed = Papa.parse(textPropio, { header: true, skipEmptyLines: true });
-        
-        // 3. Cruce de información
+        // Eliminar duplicados si los hubiera en el archivo del usuario
+        numerosPropios = [...new Set(numerosPropios)];
+
+        // 3. Cruzar datos
         resultadosGlobales = [];
-        propioParsed.data.forEach(row => {
-          const keyNumeroPropio = Object.keys(row).find(k => k && k.trim().toUpperCase().includes('NUMERO')) || Object.keys(row)[0];
-          if (!row[keyNumeroPropio]) return;
+        numerosPropios.forEach(num => {
+          const fraccionesOficiales = mapaOficial[num];
 
-          const numPropioStr = String(row[keyNumeroPropio]).trim().padStart(5, '0');
-          const fraccionesOficiales = mapaOficial[numPropioStr];
-
-          // Comprobar si existe en el oficial y si está por debajo del umbral
           if (fraccionesOficiales !== undefined && fraccionesOficiales < threshold) {
             resultadosGlobales.push({
-              numero: numPropioStr,
-              fracciones: fraccionesOficiales,
-              detalles: JSON.stringify(row)
+              numero: num,
+              fracciones: fraccionesOficiales
             });
           }
         });
 
-        // 4. Renderizar resultados
+        // 4. Mostrar Resultados
         renderResultados(threshold);
-        showStatus(`Proceso finalizado. Se encontraron ${resultadosGlobales.length} números con menos de ${threshold} fracciones.`, 'bg-emerald-100 text-emerald-800');
+        showStatus(`✅ Proceso finalizado: ${resultadosGlobales.length} números tienen menos de ${threshold} fracciones.`, 'bg-emerald-100 text-emerald-900 border border-emerald-200');
 
       } catch (err) {
-        showStatus(`Error: ${err.message}`, 'bg-red-100 text-red-800');
+        showStatus(`❌ Error: ${err.message}`, 'bg-red-100 text-red-900 border border-red-200');
       }
     }
 
@@ -164,10 +188,9 @@
       resultadosGlobales.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-3 font-mono font-bold text-blue-700">${item.numero}</td>
-          <td class="p-3 font-semibold text-red-600">${item.fracciones}</td>
-          <td class="p-3"><span class="px-2.5 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">&lt; ${threshold}</span></td>
-          <td class="p-3 text-xs text-slate-500 truncate max-w-xs">${item.detalles}</td>
+          <td class="p-2.5 font-mono font-bold text-blue-700 text-sm">${item.numero}</td>
+          <td class="p-2.5 font-semibold text-red-600">${item.fracciones}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 text-[10px] font-semibold bg-red-100 text-red-700 rounded-full">&lt; ${threshold}</span></td>
         `;
         tbody.appendChild(tr);
       });
@@ -177,7 +200,7 @@
 
     function showStatus(msg, classes) {
       const status = document.getElementById('status');
-      status.className = `p-3 rounded-lg text-sm font-medium mb-4 ${classes}`;
+      status.className = `my-4 p-3 rounded-xl text-xs font-medium text-center ${classes}`;
       status.innerText = msg;
       status.classList.remove('hidden');
     }
@@ -188,7 +211,7 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `fracciones_menores_400.csv`);
+      link.setAttribute("download", `resultados_fracciones.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -196,3 +219,4 @@
   </script>
 </body>
 </html>
+
