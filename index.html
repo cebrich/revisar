@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comprobador de Lotería - Móvil</title>
-  <!-- Tailwind CSS para diseño móvil -->
+  <!-- Tailwind CSS para interfaz móvil -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- PapaParse para procesamiento de textos/CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -12,53 +12,70 @@
 <body class="bg-slate-100 text-slate-800 p-4 min-h-screen">
   <div class="max-w-lg mx-auto bg-white p-5 rounded-2xl shadow-lg border border-slate-200">
     
-    <!-- Encabezado Móvil -->
+    <!-- Encabezado -->
     <div class="text-center mb-6">
       <h1 class="text-xl font-bold text-slate-900">Comprobador de Existencias</h1>
-      <p class="text-xs text-slate-500 mt-1">Carga tu listado .txt y detecta números con menos de 400 fracciones.</p>
+      <p class="text-xs text-slate-500 mt-1">Detecta números con menos de 400 fracciones en el listado oficial.</p>
     </div>
 
-    <!-- Selección de Archivo .TXT (Optimizado para móvil) -->
-    <div class="space-y-4 mb-6">
+    <div class="space-y-5 mb-6">
       
-      <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-xl p-4 text-center">
-        <label for="customFile" class="block font-semibold text-sm text-blue-900 mb-2">
-          📱 Seleccionar listado (.txt) de tu móvil
+      <!-- 1. Listado Oficial (Archivo o URL) -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <label class="block font-bold text-xs text-slate-800 mb-2">1. Listado Oficial (Loterías)</label>
+        
+        <!-- Opción A: Subir Archivo Oficial -->
+        <div class="mb-3">
+          <label for="officialFile" class="block text-[11px] font-semibold text-slate-600 mb-1">📁 Subir archivo oficial (.csv / .txt):</label>
+          <input type="file" id="officialFile" accept=".csv, .txt" 
+                 class="block w-full text-xs text-slate-500 
+                        file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 
+                        file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 
+                        hover:file:bg-blue-200 cursor-pointer">
+        </div>
+
+        <div class="text-center text-[10px] text-slate-400 font-bold my-1">— O descarga directa por URL —</div>
+
+        <!-- Opción B: URL -->
+        <div>
+          <label for="officialUrl" class="block text-[11px] font-semibold text-slate-600 mb-1">🔗 URL Oficial:</label>
+          <input type="text" id="officialUrl" 
+                 value="https://www.loteriasyapuestas.es/new-geo-web/GeoTerminalServlet/Sorteo2026102.csv?drawId=1332409102&locale=es&cdc=13324" 
+                 class="w-full text-[11px] p-2 border rounded-md bg-white outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+      </div>
+
+      <!-- 2. Tu Listado Propio -->
+      <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-xl p-4">
+        <label for="customFile" class="block font-bold text-xs text-blue-900 mb-2">
+          📱 2. Tu Listado Propio (.txt / .csv)
         </label>
         <input type="file" id="customFile" accept=".txt,.csv" 
                class="block w-full text-xs text-slate-600 
-                      file:mr-3 file:py-3 file:px-4 file:rounded-lg file:border-0 
+                      file:mr-3 file:py-2.5 file:px-4 file:rounded-lg file:border-0 
                       file:text-xs file:font-semibold file:bg-blue-600 file:text-white 
                       hover:file:bg-blue-700 active:file:bg-blue-800 cursor-pointer">
-        <p class="text-[11px] text-slate-500 mt-2">Admite archivos .txt con un número por línea o en formato CSV.</p>
+        <p class="text-[11px] text-slate-500 mt-2">Admite un número por línea o archivo con cabecera.</p>
       </div>
 
-      <!-- Ajuste del umbral -->
-      <div class="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
+      <!-- Ajuste del Umbral -->
+      <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
         <label for="threshold" class="font-medium text-xs text-slate-700">Fracciones menores a:</label>
         <input type="number" id="threshold" value="400" class="w-20 p-2 border rounded-md text-center font-bold text-slate-800 bg-white">
       </div>
-
-      <!-- URL Oficial (Plegable / Secundaria) -->
-      <details class="text-xs text-slate-500">
-        <summary class="cursor-pointer font-medium text-slate-600 hover:underline">Ver URL del listado oficial</summary>
-        <input type="text" id="officialUrl" 
-               value="https://www.loteriasyapuestas.es/new-geo-web/GeoTerminalServlet/Sorteo2026102.csv?drawId=1332409102&locale=es&cdc=13324" 
-               class="w-full text-[11px] p-2 border rounded bg-slate-50 mt-2 outline-none">
-      </details>
       
     </div>
 
     <!-- Botón Principal -->
     <button onclick="procesarListados()" id="btnProcess" 
             class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
-      🔍 Comprobar Mi Listado
+      🔍 Comprobar Existencias
     </button>
 
     <!-- Indicador de Estado -->
     <div id="status" class="hidden my-4 p-3 rounded-xl text-xs font-medium text-center"></div>
 
-    <!-- Resultados -->
+    <!-- Tabla de Resultados -->
     <div id="resultsContainer" class="hidden mt-6">
       <div class="flex justify-between items-center mb-3">
         <h2 class="font-bold text-sm text-slate-800">Coincidencias (<span id="countResult">0</span>)</h2>
@@ -67,7 +84,6 @@
         </button>
       </div>
 
-      <!-- Tabla Adaptada a Móvil -->
       <div class="overflow-x-auto border border-slate-200 rounded-xl">
         <table class="w-full text-left text-xs border-collapse">
           <thead class="bg-slate-100 text-slate-600 border-b">
@@ -92,24 +108,35 @@
     async function procesarListados() {
       const status = document.getElementById('status');
       const resultsContainer = document.getElementById('resultsContainer');
+      
+      const officialFileInput = document.getElementById('officialFile').files[0];
       const officialUrl = document.getElementById('officialUrl').value.trim();
+      
       const customFileInput = document.getElementById('customFile').files[0];
       const threshold = parseInt(document.getElementById('threshold').value, 10);
 
       if (!customFileInput) {
-        showStatus('⚠️ Selecciona un archivo .txt de tu móvil antes de continuar.', 'bg-amber-100 text-amber-900 border border-amber-200');
+        showStatus('⚠️ Selecciona tu archivo de números (.txt) antes de continuar.', 'bg-amber-100 text-amber-900 border border-amber-200');
         return;
       }
 
-      showStatus('⏳ Descargando datos oficial y analizando...', 'bg-blue-100 text-blue-900 border border-blue-200');
+      showStatus('⏳ Leyendo datos y procesando...', 'bg-blue-100 text-blue-900 border border-blue-200');
       resultsContainer.classList.add('hidden');
 
       try {
-        // 1. Obtener CSV oficial mediante Proxy CORS
-        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(officialUrl);
-        const resOficial = await fetch(proxyUrl);
-        if (!resOficial.ok) throw new Error('No se pudo descargar el listado oficial.');
-        const textOficial = await resOficial.text();
+        // 1. Obtener contenido del listado oficial (Archivo subido o URL)
+        let textOficial = '';
+
+        if (officialFileInput) {
+          textOficial = await officialFileInput.text();
+        } else if (officialUrl) {
+          const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(officialUrl);
+          const resOficial = await fetch(proxyUrl);
+          if (!resOficial.ok) throw new Error('No se pudo descargar el listado oficial desde la URL.');
+          textOficial = await resOficial.text();
+        } else {
+          throw new Error('Debes seleccionar el archivo oficial o introducir una URL.');
+        }
         
         const oficialParsed = Papa.parse(textOficial, { header: true, skipEmptyLines: true, dynamicTyping: true });
         
@@ -128,12 +155,9 @@
 
         // 2. Leer archivo .txt propio
         const textPropio = await customFileInput.text();
-        
-        // Extraer números independientemente de si es CSV o líneas simples
         const lineas = textPropio.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
         let numerosPropios = [];
 
-        // Detectar si el .txt tiene cabecera con columna NUMERO o si es una lista simple
         const primerLinea = lineas[0] || '';
         if (primerLinea.toUpperCase().includes('NUMERO')) {
           const propioParsed = Papa.parse(textPropio, { header: true, skipEmptyLines: true });
@@ -145,16 +169,14 @@
             }
           });
         } else {
-          // Lectura directa línea a línea (formato simple: un número por línea)
           lineas.forEach(linea => {
-            const numLimpio = linea.replace(/\D/g, ''); // Deja solo dígitos
+            const numLimpio = linea.replace(/\D/g, '');
             if (numLimpio.length > 0) {
               numerosPropios.push(numLimpio.padStart(5, '0'));
             }
           });
         }
 
-        // Eliminar duplicados si los hubiera en el archivo del usuario
         numerosPropios = [...new Set(numerosPropios)];
 
         // 3. Cruzar datos
@@ -200,23 +222,5 @@
 
     function showStatus(msg, classes) {
       const status = document.getElementById('status');
-      status.className = `my-4 p-3 rounded-xl text-xs font-medium text-center ${classes}`;
-      status.innerText = msg;
-      status.classList.remove('hidden');
-    }
-
-    function exportarCSV() {
-      if (!resultadosGlobales.length) return;
-      const csv = Papa.unparse(resultadosGlobales);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute("download", `resultados_fracciones.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
-</body>
-</html>
+      
 
