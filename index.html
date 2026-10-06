@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comprobador de Lotería - Móvil</title>
-  <!-- Tailwind CSS para interfaz móvil -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- PapaParse para procesamiento de textos/CSV -->
+  <!-- PapaParse para procesamiento de datos -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800 p-4 min-h-screen">
@@ -26,8 +26,8 @@
         
         <!-- Opción A: Subir Archivo Oficial -->
         <div class="mb-3">
-          <label for="officialFile" class="block text-[11px] font-semibold text-slate-600 mb-1">📁 Subir archivo oficial (.csv / .txt):</label>
-          <input type="file" id="officialFile" accept=".csv, .txt" 
+          <label for="officialFile" class="block text-[11px] font-semibold text-slate-600 mb-1">📁 Subir archivo oficial de tu móvil:</label>
+          <input type="file" id="officialFile" 
                  class="block w-full text-xs text-slate-500 
                         file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 
                         file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 
@@ -50,12 +50,12 @@
         <label for="customFile" class="block font-bold text-xs text-blue-900 mb-2">
           📱 2. Tu Listado Propio (.txt / .csv)
         </label>
-        <input type="file" id="customFile" accept=".txt,.csv" 
+        <input type="file" id="customFile" 
                class="block w-full text-xs text-slate-600 
                       file:mr-3 file:py-2.5 file:px-4 file:rounded-lg file:border-0 
                       file:text-xs file:font-semibold file:bg-blue-600 file:text-white 
                       hover:file:bg-blue-700 active:file:bg-blue-800 cursor-pointer">
-        <p class="text-[11px] text-slate-500 mt-2">Admite un número por línea o archivo con cabecera.</p>
+        <p class="text-[11px] text-slate-500 mt-2">Admite un número por línea o archivo con cabeceras.</p>
       </div>
 
       <!-- Ajuste del Umbral -->
@@ -116,11 +116,11 @@
       const threshold = parseInt(document.getElementById('threshold').value, 10);
 
       if (!customFileInput) {
-        showStatus('⚠️ Selecciona tu archivo de números (.txt) antes de continuar.', 'bg-amber-100 text-amber-900 border border-amber-200');
+        showStatus('⚠️ Selecciona tu listado propio (.txt / .csv) antes de continuar.', 'bg-amber-100 text-amber-900 border border-amber-200');
         return;
       }
 
-      showStatus('⏳ Leyendo datos y procesando...', 'bg-blue-100 text-blue-900 border border-blue-200');
+      showStatus('⏳ Leyendo archivos y procesando...', 'bg-blue-100 text-blue-900 border border-blue-200');
       resultsContainer.classList.add('hidden');
 
       try {
@@ -222,5 +222,23 @@
 
     function showStatus(msg, classes) {
       const status = document.getElementById('status');
-      
+      status.className = `my-4 p-3 rounded-xl text-xs font-medium text-center ${classes}`;
+      status.innerText = msg;
+      status.classList.remove('hidden');
+    }
+
+    function exportarCSV() {
+      if (!resultadosGlobales.length) return;
+      const csv = Papa.unparse(resultadosGlobales);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `resultados_fracciones.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
 
